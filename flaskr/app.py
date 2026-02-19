@@ -3,6 +3,7 @@ from .modelos import db, Cancion, Medio, Album, Usuario
 from .modelos import AlbumSchema,CancionSchema, UsuarioSchema
 from flask_restful import Api
 from .vistas import VistaCanciones, VistaCancion, VistasSignIn, VistaLogIn, VistaAlbumsUsuario,VistaAlbum, VistaCancionesAlbum
+from flask_cors import CORS
 
 app = create_app('default')
 app_context = app.app_context()
@@ -11,6 +12,7 @@ app_context.push()
 db.init_app(app)
 db.create_all()
 
+cors = CORS(app, resources={r"/*": {"origins": "*"}}) 
 api = Api(app)
 api.add_resource(VistaCanciones, '/canciones')
 api.add_resource(VistaCancion, '/cancion/<int:id_cancion>')

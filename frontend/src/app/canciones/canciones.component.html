@@ -1,0 +1,20 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Titulo</th>
+      <th scope="col">Minutos</th>
+      <th scope="col">Segundos</th>
+      <th scope="col">Interprete</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (cancion of canciones; track cancion.id) {
+    <tr>
+      <td>{{ cancion.titulo }}</td>
+      <td>{{ cancion.minutos }}</td>
+      <td>{{ cancion.segundos }}</td>
+      <td>{{ cancion.interprete }}</td>
+    </tr>
+    }
+  </tbody>
+</table>
