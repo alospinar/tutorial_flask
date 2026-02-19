@@ -2,7 +2,7 @@ from flask_restful import Resource
 from ..modelos import db,Cancion,CancionSchema, Usuario, UsuarioSchema, Album, AlbumSchema
 from flask import request
 from sqlalchemy.exc import IntegrityError
-
+from flask_jwt_extended import create_access_token, jwt_required
 cancion_schema = CancionSchema()
 usuario_schema = UsuarioSchema()
 album_schema = AlbumSchema()
@@ -58,9 +58,10 @@ class VistasSignIn(Resource):
     def post(self):
         nuevo_usuario = Usuario(nombre=request.json['nombre'],\
                                 contrasena=request.json['contrasena'])
+        toke_de_acceso = create_access_token(identity=request.json['nombre'])
         db.session.add(nuevo_usuario)
         db.session.commit()
-        return 'usuario creado exitosamente', 201
+        return {'mensaje':'Usuario creado exitosamente', 'token de acceso': toke_de_acceso}
     
     def put(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -73,8 +74,10 @@ class VistasSignIn(Resource):
         db.session.delete(usuario)
         db.session.commit()
         return 'operacion exitosa', 204
+    
 class VistaAlbumsUsuario(Resource):
 
+    @jwt_required()
     def post(self, id_usuario):
         nuevo_album = Album(titulo=request.json["titulo"], anio=request.json["anio"], descripcion=request.json["descripcion"], medio=request.json["medio"])
         usuario = Usuario.query.get_or_404(id_usuario)
@@ -87,7 +90,7 @@ class VistaAlbumsUsuario(Resource):
             return 'El usuario ya tiene un album con dicho nombre',409
 
         return album_schema.dump(nuevo_album)
-
+    @jwt_required()
     def get(self, id_usuario):
         usuario = Usuario.query.get_or_404(id_usuario)
         return [album_schema.dump(al) for al in usuario.albumes]
